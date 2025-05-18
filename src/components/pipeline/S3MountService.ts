@@ -3,18 +3,29 @@ import { toast } from "@/hooks/use-toast";
 import { S3MountFormValues } from "./types";
 
 export const generateMountCode = (values: S3MountFormValues): string => {
-  return `# Mount S3 bucket
-access_key = "${values.access_key}"
+  // Use bucket name as mount name if mount_name is empty
+  const effectiveMountName = values.mount_name || values.aws_bucket_name;
+  
+  let code = `access_key = "${values.access_key}"
 secret_key = "${values.secret_key}"
 encoded_secret_key = secret_key.replace("/", "%2F")
 aws_bucket_name = "${values.aws_bucket_name}"
-mount_name = "${values.mount_name}"
+mount_name = "${effectiveMountName}"
 
-# Create the mount
-dbutils.fs.mount("s3a://%s:%s@%s" % (access_key, encoded_secret_key, aws_bucket_name), "/mnt/%s" % mount_name)
+dbutils.fs.mount("s3a://%s:%s@%s" % (access_key, encoded_secret_key, aws_bucket_name), "/mnt/%s" % mount_name)`;
 
-# List files in the mounted bucket
-# display(dbutils.fs.ls("/mnt/%s" % mount_name))`;
+  // Add display command based on user preference
+  if (values.show_display_command) {
+    code += `
+
+display(dbutils.fs.ls("/mnt/%s" % mount_name))`;
+  } else {
+    code += `
+
+#display(dbutils.fs.ls("/mnt/%s" % mount_name))`;
+  }
+  
+  return code;
 };
 
 export const deployMountToDatabricks = async (
