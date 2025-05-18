@@ -25,7 +25,7 @@
 
 ## 🔍 Project Overview
 
-**Delta Lake Studio** is a modern, web-based visual pipeline builder specifically designed for data engineers, data scientists, and analytics teams working with Databricks and Delta Lake. It bridges the gap between code-first and visual development approaches, enabling teams to:
+**Delta Lake Studio** is a modern, web-based visual pipeline builder specifically designed for data engineers,  data scientists, and analytics teams working with Databricks and Delta Lake. It bridges the gap between code-first and visual development approaches, enabling teams to:
 
 - **Design data pipelines** with an intuitive drag-and-drop interface
 - **Configure complex transformations** without writing extensive code
@@ -117,6 +117,7 @@ Whether you're a seasoned data engineer or a business analyst with limited codin
 Delta Lake Studio follows a modern web application architecture:
 
 ```
+<<<<<<< HEAD
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
 │                 │     │                 │     │                 │
 │  React Frontend │────▶│  Node.js API   │────▶│   Databricks    │
@@ -130,6 +131,10 @@ Delta Lake Studio follows a modern web application architecture:
 │  Browser Storage│                           │   Cloud Storage │
 │                 │                           │   (S3, Azure)   │
 └─────────────────┘                           └─────────────────┘
+=======
+fork this repo https://github.com/Vrahad-Analytics-India/deltalakestudio.git
+git clone your repo name 
+>>>>>>> 133dd1d1a90165847f85a3f30953c829b5211477
 ```
 
 The application uses:
