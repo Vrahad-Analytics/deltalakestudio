@@ -57,7 +57,8 @@ Visit [deltalakestudio.com](https://deltalakestudio.com/) and start building pip
 1. **Clone the repository:**
 
 ```
-git clone https://github.com/Vrahad-Analytics-India/deltalakestudio.git
+fork this repo https://github.com/Vrahad-Analytics-India/deltalakestudio.git
+git clone your repo name 
 ```
 
 2. **Enter the project directory:**
