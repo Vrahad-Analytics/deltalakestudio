@@ -51,6 +51,7 @@ const PipelineDesigner = () => {
     token,
     savePipeline,
     handleDataSourceSubmit,
+    handleS3MountSubmit: pipelineHandleS3MountSubmit,
     updateNodeDetails
   } = usePipelineState();
   
@@ -62,7 +63,7 @@ const PipelineDesigner = () => {
     form: s3MountForm,
     handleConfigureS3Mount,
     handleS3MountSubmit
-  } = useS3Mount(workspaceUrl, token);
+  } = useS3Mount({ workspaceUrl, token, nodes });
 
   // Warehouse management
   const {
@@ -146,9 +147,12 @@ const PipelineDesigner = () => {
   };
 
   // Form submission handler for S3 mount configuration
-  const onS3MountSubmit = async (values: any) => {
-    const result = await handleS3MountSubmit(values);
-    if (result && selectedS3NodeId) {
+  const onS3MountSubmit = (values: any) => {
+    // Use the handleS3MountSubmit from usePipelineState
+    pipelineHandleS3MountSubmit(values, selectedS3NodeId);
+    
+    // Also update the s3MountConfig in the node data
+    if (selectedS3NodeId) {
       setNodes(prevNodes => 
         prevNodes.map(node => 
           node.id === selectedS3NodeId
@@ -156,9 +160,6 @@ const PipelineDesigner = () => {
                 ...node,
                 data: {
                   ...node.data,
-                  details: result.details,
-                  code: result.code,
-                  codeSummary: result.codeSummary,
                   s3MountConfig: values
                 }
               }
@@ -166,6 +167,7 @@ const PipelineDesigner = () => {
         )
       );
     }
+    
     setIsS3MountDialogOpen(false);
   };
 

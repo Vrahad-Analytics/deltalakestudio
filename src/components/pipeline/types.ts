@@ -79,6 +79,7 @@ export interface S3MountFormValues {
   secret_key: string;
   aws_bucket_name: string;
   mount_name: string;
+  show_display_command?: boolean;
 }
 
 // New interface for Warehouse configuration
@@ -110,6 +111,8 @@ export interface NodeData {
   selectedColumns?: string[];
   outputDataframeName?: string;
   warehouseConfig?: WarehouseFormValues;
+  // S3 Mount configuration
+  s3MountConfig?: S3MountFormValues;
   // New fields for additional features
   apiConfig?: ApiConnectorConfig;
   validationRules?: ValidationRule[];

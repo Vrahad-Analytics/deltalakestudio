@@ -53,7 +53,7 @@ export const ComponentPalette: React.FC<ComponentPaletteProps> = ({ onDragStart,
       <div className="mb-4">
         <h3 className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-2">Sources</h3>
         {renderPaletteItem('source', 'Data Source', <Database size={20} />)}
-        {renderPaletteItem('s3', 'S3 Mount', <Folder size={20} />)}
+        {renderPaletteItem('s3-mount', 'S3 Mount', <Folder size={20} />)}
       </div>
       
       <div className="mb-4">

@@ -1,16 +1,26 @@
 
-import { useState, useEffect } from 'react';
-import { Node, Edge, DataSourceFormValues } from './types';
+import { useState, useEffect, useCallback } from 'react';
+import { Node, Edge, DataSourceFormValues, S3MountFormValues, WarehouseFormValues } from './types';
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
 import { generateSparkCode, generateCodeSummary } from './SparkCodeGenerator';
+import { generateMountCode } from './S3MountService';
 
-export interface PipelineState {
+export interface PipelineStateReturn {
   nodes: Node[];
+  setNodes: React.Dispatch<React.SetStateAction<Node[]>>;
   edges: Edge[];
+  setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
+  zoom: number;
+  setZoom: React.Dispatch<React.SetStateAction<number>>;
   pipelineName: string;
+  setPipelineName: React.Dispatch<React.SetStateAction<string>>;
   workspaceUrl: string | null;
   token: string | null;
+  savePipeline: () => void;
+  handleDataSourceSubmit: (values: DataSourceFormValues, selectedNodeId: string | null) => void;
+  handleS3MountSubmit: (values: S3MountFormValues, selectedNodeId: string | null) => void;
+  updateNodeDetails: (nodeId: string, details: string) => void;
 }
 
 export function usePipelineState() {
@@ -62,7 +72,7 @@ export function usePipelineState() {
   }, [navigate]);
 
   // Handle data source form submission
-  const handleDataSourceSubmit = (values: DataSourceFormValues, selectedNodeId: string | null) => {
+  const handleDataSourceSubmit = useCallback((values: DataSourceFormValues, selectedNodeId: string | null) => {
     if (!selectedNodeId) return;
 
     const code = generateSparkCode(values);
@@ -101,10 +111,52 @@ export function usePipelineState() {
         values.cloudProvider !== 'local' ? ` from ${values.cloudProvider.toUpperCase()}` : ''
       }`,
     });
-  };
+  }, [setNodes]);
+  
+  // Handle S3 mount form submission
+  const handleS3MountSubmit = useCallback((values: S3MountFormValues, selectedNodeId: string | null) => {
+    if (!selectedNodeId) return;
+    
+    // If mount_name is empty, use bucket name
+    const effectiveMountName = values.mount_name || values.aws_bucket_name;
+    
+    // Generate the mount code
+    const code = generateMountCode(values);
+    const codeSummary = `S3 Mount: ${values.aws_bucket_name} → /mnt/${effectiveMountName}`;
+    
+    setNodes(prevNodes => 
+      prevNodes.map(node => 
+        node.id === selectedNodeId
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                label: `S3 Mount: ${values.aws_bucket_name}`,
+                details: `Mount: /mnt/${effectiveMountName}`,
+                code,
+                codeSummary,
+                // Store the S3 mount configuration for persistence
+                s3MountConfig: {
+                  access_key: values.access_key,
+                  secret_key: values.secret_key,
+                  aws_bucket_name: values.aws_bucket_name,
+                  mount_name: effectiveMountName,
+                  show_display_command: values.show_display_command
+                }
+              }
+            }
+          : node
+      )
+    );
+
+    toast({
+      title: "S3 Mount configured",
+      description: `Successfully configured S3 mount for bucket ${values.aws_bucket_name}`,
+    });
+  }, [setNodes]);
 
   // Save the current pipeline to localStorage
-  const savePipeline = () => {
+  const savePipeline = useCallback(() => {
     try {
       const pipelineData = { 
         nodes, 
@@ -125,10 +177,10 @@ export function usePipelineState() {
         variant: "destructive",
       });
     }
-  };
+  }, [nodes, edges, pipelineName]);
 
   // Update node details (used after cluster creation)
-  const updateNodeDetails = (nodeId: string, details: string) => {
+  const updateNodeDetails = useCallback((nodeId: string, details: string) => {
     setNodes(prevNodes => 
       prevNodes.map(node => 
         node.id === nodeId
@@ -142,8 +194,9 @@ export function usePipelineState() {
           : node
       )
     );
-  };
+  }, [setNodes]);
 
+  // Create a stable reference to the returned object
   return {
     nodes,
     setNodes,
@@ -157,6 +210,7 @@ export function usePipelineState() {
     token,
     savePipeline,
     handleDataSourceSubmit,
+    handleS3MountSubmit,
     updateNodeDetails
   };
 }

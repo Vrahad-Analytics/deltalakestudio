@@ -18,6 +18,7 @@ import {
   CheckSquare as Check,
   BarChart as ChartBar,
   Copy as Duplicate,
+  Copy,
   Shield,
   ShieldCheck,
   Lock,
@@ -263,17 +264,45 @@ export const NodeComponent = ({
       case 's3-mount':
         if (onConfigureS3Mount) {
           return (
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="w-full text-xs"
-              onClick={(e) => {
-                e.stopPropagation();
-                onConfigureS3Mount(node.id);
-              }}
-            >
-              Configure S3 Mount
-            </Button>
+            <div className="space-y-2 w-full">
+              {node.data.code && (
+                <div className="text-xs bg-slate-100 dark:bg-slate-800 p-2 rounded max-h-24 overflow-auto font-mono border border-slate-200 dark:border-slate-700">
+                  {node.data.code.split('\n').slice(0, 5).join('\n')}
+                  {node.data.code.split('\n').length > 5 && '\n...'}                  
+                </div>
+              )}
+              <div className="flex space-x-2">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  className="flex-1 text-xs"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onConfigureS3Mount(node.id);
+                  }}
+                >
+                  <Edit className="h-3 w-3 mr-1" />
+                  Edit Mount
+                </Button>
+                {node.data.code && (
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="text-xs"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigator.clipboard.writeText(node.data.code || '');
+                      toast({
+                        title: "Code copied",
+                        description: "Mount code copied to clipboard",
+                      });
+                    }}
+                  >
+                    <Copy className="h-3 w-3" />
+                  </Button>
+                )}
+              </div>
+            </div>
           );
         }
         return null;
