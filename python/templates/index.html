@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delta Lake Studio | Visual Data Pipeline Designer for Databricks</title>
+    <meta name="description" content="Build, optimize, and manage Delta Lake data pipelines with our intuitive visual designer. Connect to Databricks, design ETL workflows, and monitor performance in real-time.">
+    <meta name="keywords" content="Delta Lake, Databricks, data pipeline, ETL, data engineering, data warehouse, data lakehouse, visual pipeline designer, big data, data transformation, data analytics">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://deltalakestudio.com/">
+    <meta property="og:title" content="Delta Lake Studio | Visual Data Pipeline Designer for Databricks">
+    <meta property="og:description" content="Build, optimize, and manage Delta Lake data pipelines with our intuitive visual designer. Connect to Databricks, design ETL workflows, and monitor performance in real-time.">
+    <meta property="og:image" content="https://deltalakestudio.com/og-image.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://deltalakestudio.com/">
+    <meta property="twitter:title" content="Delta Lake Studio | Visual Data Pipeline Designer for Databricks">
+    <meta property="twitter:description" content="Build, optimize, and manage Delta Lake data pipelines with our intuitive visual designer. Connect to Databricks, design ETL workflows, and monitor performance in real-time.">
+    <meta property="twitter:image" content="https://deltalakestudio.com/og-image.png">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <div class="container header-container">
+                <div class="logo">
+                    <h1>Delta Lake Studio</h1>
+                </div>
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="#" id="about-link">About Us</a></li>
+                        <li><a href="#" id="privacy-link">Privacy Policy</a></li>
+                        <li><a href="#" id="contact-link">Contact Us</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        
+        <main>
+            <section class="hero">
+                <div class="container">
+                    <div class="hero-content">
+                        <h1>Delta Lake Studio</h1>
+                        <h2>Visual Data Pipeline Designer for Databricks</h2>
+                        <p>Build, optimize, and manage Delta Lake data pipelines with our intuitive visual designer. 
+                        Connect to Databricks, design ETL workflows, and monitor performance in real-time.</p>
+                        
+                        <div class="tags">
+                            <span class="tag">#DeltaLake</span>
+                            <span class="tag">#Databricks</span>
+                            <span class="tag">#DataPipelines</span>
+                            <span class="tag">#ETL</span>
+                            <span class="tag">#DataEngineering</span>
+                        </div>
+                    </div>
+                    
+                    <div class="login-form">
+                        <h3>Connect to Databricks</h3>
+                        {% if error %}
+                        <div class="error-message">
+                            {{ error }}
+                        </div>
+                        {% endif %}
+                        <form id="login-form" action="/login" method="post">
+                            <div class="form-group">
+                                <label for="workspace-url">Databricks Workspace URL</label>
+                                <input type="text" id="workspace-url" name="url" placeholder="https://example-workspace.cloud.databricks.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="token">Access Token</label>
+                                <input type="password" id="token" name="token" placeholder="dapi1234567890abcdef">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Connect</button>
+                            <button type="button" class="btn btn-secondary" id="example-credentials">Use Example Credentials</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="features">
+                <div class="container">
+                    <h2>Key Features</h2>
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">📊</div>
+                            <h3>Delta Lake Integration</h3>
+                            <p>Native support for Delta Lake tables and ACID transactions</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔄</div>
+                            <h3>Visual ETL Designer</h3>
+                            <p>Intuitive drag-and-drop pipeline builder for ETL workflows</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">📈</div>
+                            <h3>Real-time Analytics</h3>
+                            <p>Monitor pipeline performance and data quality metrics</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">🔒</div>
+                            <h3>Enterprise Security</h3>
+                            <p>Role-based access control and data encryption</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">💻</div>
+                            <h3>Auto-generated Code</h3>
+                            <p>Automatically generate optimized Spark and SQL code</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">✅</div>
+                            <h3>Data Quality</h3>
+                            <p>Built-in data validation and quality monitoring tools</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2025 Delta Lake Studio. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#" id="about-footer">About</a>
+                    <a href="#" id="privacy-footer">Privacy</a>
+                    <a href="#" id="contact-footer">Contact</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Modals -->
+    <div id="about-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>About Delta Lake Studio</h2>
+            <p>Delta Lake Studio is a powerful visual designer for creating, optimizing, and managing data pipelines on Databricks. Our mission is to simplify data engineering and make it accessible to everyone.</p>
+            <p>Founded by a team of data engineers and Databricks experts, we're committed to helping organizations unlock the full potential of their data lakehouse architecture.</p>
+        </div>
+    </div>
+    
+    <div id="privacy-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Privacy Policy</h2>
+            <p>At Delta Lake Studio, we take your privacy seriously. We only collect information necessary to provide our services and never share your data with third parties without your explicit consent.</p>
+            <p>Your Databricks credentials are securely stored in your browser session and are never persisted on our servers.</p>
+        </div>
+    </div>
+    
+    <div id="contact-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Contact Us</h2>
+            <p>Have questions or feedback? We'd love to hear from you!</p>
+            <form id="contact-form">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Toast notifications -->
+    <div id="toast" class="toast"></div>
+    
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

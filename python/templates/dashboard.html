@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Delta Lake Studio</title>
+    <meta name="description" content="Delta Lake Studio dashboard for managing data pipelines and Databricks resources.">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    
+    <!-- Font Awesome for icons (loaded from CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <h2>Delta Lake Studio</h2>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li>
+                    <a href="/dashboard" class="active">
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="/pipeline-designer">
+                        <i class="fas fa-project-diagram"></i>
+                        Pipeline Designer
+                    </a>
+                </li>
+                <li>
+                    <a href="/data-flow">
+                        <i class="fas fa-database"></i>
+                        Data Flow
+                    </a>
+                </li>
+                <li>
+                    <a href="/ai-settings">
+                        <i class="fas fa-cog"></i>
+                        AI Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <div class="dashboard-header">
+                <h1>Dashboard</h1>
+                <div class="user-info">
+                    <span id="workspace-display">Connected to: <span id="workspace-url"></span></span>
+                </div>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Clusters</h3>
+                    <div class="value" id="clusters-count">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Jobs</h3>
+                    <div class="value" id="jobs-count">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Storage</h3>
+                    <div class="value" id="storage-usage">-</div>
+                </div>
+            </div>
+            
+            <!-- Pipelines Section -->
+            <section>
+                <div class="section-header">
+                    <h2>Pipelines</h2>
+                    <button class="btn btn-primary" id="create-pipeline-btn">
+                        <i class="fas fa-plus"></i> New Pipeline
+                    </button>
+                </div>
+                
+                <div class="pipelines-grid" id="pipelines-container">
+                    <!-- Pipelines will be loaded here dynamically -->
+                    <div class="loading">Loading pipelines...</div>
+                </div>
+            </section>
+            
+            <!-- Recent Activity Section -->
+            <section>
+                <h2>Recent Activity</h2>
+                <div class="activity-list" id="activity-container">
+                    <!-- Activity will be loaded here dynamically -->
+                    <div class="loading">Loading activity...</div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Toast notifications -->
+    <div id="toast" class="toast"></div>
+    
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+</body>
+</html>

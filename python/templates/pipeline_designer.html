@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline Designer | Delta Lake Studio</title>
+    <meta name="description" content="Visual pipeline designer for creating and editing data pipelines for Databricks.">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pipeline_designer.css') }}">
+    
+    <!-- jQuery for easier DOM manipulation -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Font Awesome for icons (loaded from CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="designer-container">
+        <!-- Component Palette -->
+        <aside class="palette">
+            <div class="palette-header">
+                <h2>Components</h2>
+            </div>
+            
+            <!-- Sources Category -->
+            <div class="palette-category">
+                <h3>Sources</h3>
+                <div class="palette-item" draggable="true" data-type="source" data-format="csv">
+                    <div class="palette-item-icon"><i class="fas fa-file-csv"></i></div>
+                    <div class="palette-item-label">CSV Source</div>
+                </div>
+                <div class="palette-item" draggable="true" data-type="source" data-format="json">
+                    <div class="palette-item-icon"><i class="fas fa-file-code"></i></div>
+                    <div class="palette-item-label">JSON Source</div>
+                </div>
+                <div class="palette-item" draggable="true" data-type="source" data-format="parquet">
+                    <div class="palette-item-icon"><i class="fas fa-file-alt"></i></div>
+                    <div class="palette-item-label">Parquet Source</div>
+                </div>
+                <div class="palette-item" draggable="true" data-type="s3-mount">
+                    <div class="palette-item-icon"><i class="fas fa-cloud"></i></div>
+                    <div class="palette-item-label">S3 Mount</div>
+                </div>
+            </div>
+            
+            <!-- Transformations Category -->
+            <div class="palette-category">
+                <h3>Transformations</h3>
+                <div class="palette-item" draggable="true" data-type="transformation" data-transformation="filter">
+                    <div class="palette-item-icon"><i class="fas fa-filter"></i></div>
+                    <div class="palette-item-label">Filter</div>
+                </div>
+                <div class="palette-item" draggable="true" data-type="transformation" data-transformation="select">
+                    <div class="palette-item-icon"><i class="fas fa-columns"></i></div>
+                    <div class="palette-item-label">Select Columns</div>
+                </div>
+                <div class="palette-item" draggable="true" data-type="transformation" data-transformation="join">
+                    <div class="palette-item-icon"><i class="fas fa-link"></i></div>
+                    <div class="palette-item-label">Join</div>
+                </div>
+                <div class="palette-item" draggable="true" data-type="transformation" data-transformation="aggregate">
+                    <div class="palette-item-icon"><i class="fas fa-chart-bar"></i></div>
+                    <div class="palette-item-label">Aggregate</div>
+                </div>
+                <div class="palette-item" draggable="true" data-type="transformation" data-transformation="sort">
+                    <div class="palette-item-icon"><i class="fas fa-sort"></i></div>
+                    <div class="palette-item-label">Sort</div>
+                </div>
+            </div>
+            
+            <!-- Destinations Category -->
+            <div class="palette-category">
+                <h3>Destinations</h3>
+                <div class="palette-item" draggable="true" data-type="destination" data-format="csv">
+                    <div class="palette-item-icon"><i class="fas fa-file-export"></i></div>
+                    <div class="palette-item-label">CSV Output</div>
+                </div>
+                <div class="palette-item" draggable="true" data-type="destination" data-format="parquet">
+                    <div class="palette-item-icon"><i class="fas fa-file-export"></i></div>
+                    <div class="palette-item-label">Parquet Output</div>
+                </div>
+                <div class="palette-item" draggable="true" data-type="destination" data-format="delta">
+                    <div class="palette-item-icon"><i class="fas fa-database"></i></div>
+                    <div class="palette-item-label">Delta Table</div>
+                </div>
+                <div class="palette-item" draggable="true" data-type="warehouse">
+                    <div class="palette-item-icon"><i class="fas fa-warehouse"></i></div>
+                    <div class="palette-item-label">SQL Warehouse</div>
+                </div>
+            </div>
+            
+            <!-- Advanced Category -->
+            <div class="palette-category">
+                <h3>Advanced</h3>
+                <div class="palette-item" draggable="true" data-type="data-validation">
+                    <div class="palette-item-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="palette-item-label">Data Validation</div>
+                </div>
+                <div class="palette-item" draggable="true" data-type="ml-training">
+                    <div class="palette-item-icon"><i class="fas fa-brain"></i></div>
+                    <div class="palette-item-label">ML Training</div>
+                </div>
+                <div class="palette-item" draggable="true" data-type="custom-code">
+                    <div class="palette-item-icon"><i class="fas fa-code"></i></div>
+                    <div class="palette-item-label">Custom Code</div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Canvas Container -->
+        <div class="canvas-container">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="pipeline-info">
+                    <input type="text" id="pipeline-name" placeholder="Untitled Pipeline" value="Untitled Pipeline">
+                </div>
+                <div class="toolbar-actions">
+                    <button class="btn btn-secondary" id="validate-btn">
+                        <i class="fas fa-check"></i> Validate
+                    </button>
+                    <button class="btn btn-secondary" id="generate-code-btn">
+                        <i class="fas fa-code"></i> Generate Code
+                    </button>
+                    <button class="btn btn-primary" id="save-btn">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button class="btn btn-secondary" id="deploy-btn">
+                        <i class="fas fa-rocket"></i> Deploy
+                    </button>
+                    <button class="btn btn-secondary" id="back-btn">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Canvas -->
+            <div class="canvas" id="pipeline-canvas">
+                <!-- Nodes will be added here dynamically -->
+                <div class="canvas-placeholder">
+                    <div class="placeholder-content">
+                        <i class="fas fa-project-diagram"></i>
+                        <p>Drag components from the palette to start building your pipeline</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Zoom Controls -->
+            <div class="zoom-controls">
+                <button id="zoom-in" class="zoom-btn">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button id="zoom-out" class="zoom-btn">
+                    <i class="fas fa-minus"></i>
+                </button>
+                <button id="zoom-reset" class="zoom-btn">
+                    <i class="fas fa-expand"></i>
+                </button>
+            </div>
+            
+            <!-- Chat Button -->
+            <button id="chat-btn" class="chat-btn">
+                <i class="fas fa-comment"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <!-- Data Source Configuration Modal -->
+    <div id="data-source-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Configure Data Source</h2>
+            <form id="data-source-form">
+                <input type="hidden" id="node-id">
+                <div class="form-group">
+                    <label for="file-format">File Format</label>
+                    <select id="file-format" name="fileFormat">
+                        <option value="csv">CSV</option>
+                        <option value="json">JSON</option>
+                        <option value="parquet">Parquet</option>
+                        <option value="orc">ORC</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="file-path">File Path</label>
+                    <input type="text" id="file-path" name="filePath" placeholder="/path/to/data.csv">
+                </div>
+                <div class="form-group">
+                    <label for="cloud-provider">Cloud Provider</label>
+                    <select id="cloud-provider" name="cloudProvider">
+                        <option value="local">Local</option>
+                        <option value="s3">AWS S3</option>
+                        <option value="adls">Azure Data Lake</option>
+                        <option value="gcs">Google Cloud Storage</option>
+                    </select>
+                </div>
+                <div class="form-group csv-options">
+                    <label>CSV Options</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="has-header" name="hasHeader" checked>
+                        <label for="has-header">Has Header</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="infer-schema" name="inferSchema" checked>
+                        <label for="infer-schema">Infer Schema</label>
+                    </div>
+                </div>
+                <div class="form-group json-options" style="display: none;">
+                    <label>JSON Options</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="multi-line" name="multiLine">
+                        <label for="multi-line">Multi-line JSON</label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-data-source">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Transformation Configuration Modal -->
+    <div id="transformation-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Configure Transformation</h2>
+            <form id="transformation-form">
+                <input type="hidden" id="transformation-node-id">
+                <input type="hidden" id="transformation-type">
+                
+                <!-- Filter Options -->
+                <div class="transformation-options filter-options" style="display: none;">
+                    <div class="form-group">
+                        <label for="filter-condition">Filter Condition</label>
+                        <input type="text" id="filter-condition" name="condition" placeholder="col('age') > 18">
+                    </div>
+                </div>
+                
+                <!-- Select Columns Options -->
+                <div class="transformation-options select-options" style="display: none;">
+                    <div class="form-group">
+                        <label for="select-columns">Columns (comma-separated)</label>
+                        <input type="text" id="select-columns" name="columns" placeholder="id, name, age">
+                    </div>
+                </div>
+                
+                <!-- Join Options -->
+                <div class="transformation-options join-options" style="display: none;">
+                    <div class="form-group">
+                        <label for="join-right-df">Right Dataframe</label>
+                        <input type="text" id="join-right-df" name="rightDataframe" placeholder="right_df">
+                    </div>
+                    <div class="form-group">
+                        <label for="join-type">Join Type</label>
+                        <select id="join-type" name="joinType">
+                            <option value="inner">Inner</option>
+                            <option value="left">Left</option>
+                            <option value="right">Right</option>
+                            <option value="full">Full</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="join-condition">Join Condition</label>
+                        <input type="text" id="join-condition" name="joinCondition" placeholder="df.id == right_df.id">
+                    </div>
+                </div>
+                
+                <!-- Aggregate Options -->
+                <div class="transformation-options aggregate-options" style="display: none;">
+                    <div class="form-group">
+                        <label for="group-by-cols">Group By Columns (comma-separated)</label>
+                        <input type="text" id="group-by-cols" name="groupByCols" placeholder="category, region">
+                    </div>
+                    <div class="form-group">
+                        <label for="agg-expressions">Aggregation Expressions (comma-separated)</label>
+                        <input type="text" id="agg-expressions" name="aggExpressions" placeholder="sum('sales'), avg('price')">
+                    </div>
+                </div>
+                
+                <!-- Sort Options -->
+                <div class="transformation-options sort-options" style="display: none;">
+                    <div class="form-group">
+                        <label for="sort-cols">Sort Columns (comma-separated)</label>
+                        <input type="text" id="sort-cols" name="sortCols" placeholder="age, name">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="sort-ascending" name="ascending" checked>
+                        <label for="sort-ascending">Ascending</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="output-df-name">Output Dataframe Name</label>
+                    <input type="text" id="output-df-name" name="outputDataframeName" placeholder="result_df">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-transformation">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Code Preview Modal -->
+    <div id="code-preview-modal" class="modal">
+        <div class="modal-content modal-lg">
+            <span class="close">&times;</span>
+            <h2>Generated Code</h2>
+            <div class="code-preview-container">
+                <pre id="code-preview" class="code-preview"></pre>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" id="download-code">Download</button>
+                <button type="button" class="btn btn-secondary" id="copy-code">Copy</button>
+                <button type="button" class="btn btn-secondary" id="close-code-preview">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast notifications -->
+    <div id="toast" class="toast"></div>
+    
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pipeline_designer.js') }}"></script>
+</body>
+</html>
