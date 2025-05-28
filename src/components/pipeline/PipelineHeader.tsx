@@ -161,6 +161,12 @@ export const PipelineHeader: React.FC<PipelineHeaderProps> = ({
                   <ExternalLink size={16} />
                 </Button>
               )}
+              <Button variant="ghost" onClick={() => window.open('https://github.com/Vrahad-Analytics/deltalakestudio', '_blank')}>
+                Contribute on GitHub
+              </Button>
+              <Button variant="ghost" onClick={() => window.open('https://chat.whatsapp.com/DXEemF4EvLn7Wt7121yqEt', '_blank')}>
+                Join Us on WhatsApp
+              </Button>
               <Button variant="outline" onClick={() => navigate('/dashboard')}>
                 Back to Dashboard
               </Button>

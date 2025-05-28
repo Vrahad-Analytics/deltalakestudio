@@ -272,7 +272,13 @@ SELECT ctid,* FROM {table} WHERE ctid > ? ORDER BY ctid`}
             <h1 className="text-2xl font-bold mb-1">Data Flow</h1>
             <p className="text-slate-600 dark:text-slate-400">Enterprise-grade data integration engine</p>
           </div>
-          <div className="mt-4 sm:mt-0">
+          <div className="mt-4 sm:mt-0 flex space-x-2">
+            <Button variant="ghost" onClick={() => window.open('https://github.com/Vrahad-Analytics/deltalakestudio', '_blank')}>
+              Contribute on GitHub
+            </Button>
+            <Button variant="ghost" onClick={() => window.open('https://chat.whatsapp.com/DXEemF4EvLn7Wt7121yqEt', '_blank')}>
+              Join Us on WhatsApp
+            </Button>
             <Button variant="outline" onClick={() => navigate('/dashboard')}>
               Back to Dashboard
             </Button>

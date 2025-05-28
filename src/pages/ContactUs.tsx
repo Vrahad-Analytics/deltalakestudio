@@ -36,6 +36,8 @@ const ContactUs = () => {
               </li>
               <li><Button variant="ghost" onClick={() => navigate('/about')}>About Us</Button></li>
               <li><Button variant="ghost" onClick={() => navigate('/privacy')}>Privacy Policy</Button></li>
+              <li><Button variant="ghost" onClick={() => window.open('https://github.com/Vrahad-Analytics/deltalakestudio', '_blank')}>Contribute on GitHub</Button></li>
+              <li><Button variant="ghost" onClick={() => window.open('https://chat.whatsapp.com/DXEemF4EvLn7Wt7121yqEt', '_blank')}>Join Us on WhatsApp</Button></li>
             </ul>
           </nav>
         </div>

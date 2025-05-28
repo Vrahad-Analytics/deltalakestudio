@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { Logo } from "@/components/Logo";
-import { ExternalLink, Code, Database, Zap, FileSpreadsheet, ArrowRightLeft, Home, Menu } from "lucide-react";
+import { ExternalLink, Code, Database, Zap, FileSpreadsheet, ArrowRightLeft, Home, Menu, Shield } from "lucide-react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -96,6 +96,26 @@ const Dashboard = () => {
                       <ExternalLink size={16} />
                     </Button>
                     <Button 
+                      variant="ghost" 
+                      onClick={() => {
+                        window.open('https://github.com/Vrahad-Analytics/deltalakestudio', '_blank');
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center justify-start gap-2"
+                    >
+                      <span>Contribute on GitHub</span>
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      onClick={() => {
+                        window.open('https://chat.whatsapp.com/DXEemF4EvLn7Wt7121yqEt', '_blank');
+                        setIsMenuOpen(false);
+                      }}
+                      className="flex items-center justify-start gap-2"
+                    >
+                      <span>Join Us on WhatsApp</span>
+                    </Button>
+                    <Button 
                       variant="outline" 
                       onClick={() => {
                         handleLogout();
@@ -125,6 +145,18 @@ const Dashboard = () => {
               >
                 <span>Databricks Home</span>
                 <ExternalLink size={16} />
+              </Button>
+              <Button 
+                variant="ghost" 
+                onClick={() => window.open('https://github.com/Vrahad-Analytics/deltalakestudio', '_blank')}
+              >
+                Contribute on GitHub
+              </Button>
+              <Button 
+                variant="ghost" 
+                onClick={() => window.open('https://chat.whatsapp.com/DXEemF4EvLn7Wt7121yqEt', '_blank')}
+              >
+                Join Us on WhatsApp
               </Button>
               <Button variant="outline" onClick={handleLogout}>
                 Logout
@@ -169,14 +201,14 @@ const Dashboard = () => {
           
           <div className="bg-white dark:bg-slate-800 p-4 sm:p-6 rounded-lg shadow-md">
             <div className="flex items-center mb-2">
-              <Database className="mr-2 text-green-500" size={24} />
+              <Shield className="mr-2 text-blue-500" size={24} />
               <h3 className="text-lg font-semibold">Master Data Management</h3>
             </div>
             <p className="text-slate-600 dark:text-slate-300 mb-4">
-              Browse and manage all your data sources in one place
+              Unified data governance, quality management, and integration platform
             </p>
-            <Button className="w-full" variant="outline">
-              Coming Soon
+            <Button className="w-full" onClick={() => navigate('/master-data-management')}>
+              Launch MDM
             </Button>
           </div>
         </div>
