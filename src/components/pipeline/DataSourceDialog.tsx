@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 import {
   Dialog,
@@ -33,6 +33,7 @@ interface DataSourceDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: DataSourceFormValues) => void;
   defaultValues?: DataSourceFormValues;
+  setUploadedFilename?: (filename: string | null) => void;
 }
 
 export const DataSourceDialog: React.FC<DataSourceDialogProps> = ({ 
@@ -46,8 +47,12 @@ export const DataSourceDialog: React.FC<DataSourceDialogProps> = ({
     inferSchema: true,
     multiLine: false,
     cloudProvider: 'local'
-  }
+  },
+  setUploadedFilename
 }) => {
+  // --- Added state for upload ---
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<string>("");
   const form = useForm<DataSourceFormValues>({
     defaultValues
   });
@@ -158,25 +163,72 @@ export const DataSourceDialog: React.FC<DataSourceDialogProps> = ({
               )}
             />
             
-            <FormField
-              control={form.control}
-              name="filePath"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>File Path</FormLabel>
-                  <FormControl>
-                    <Input placeholder="path/to/file.csv" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    {cloudProvider === 's3' && "Enter S3 path (e.g., s3a://bucket/path/file.csv)"}
-                    {cloudProvider === 'adls' && "Enter ADLS Gen2 path (e.g., abfss://container@account.dfs.core.windows.net/path/)"}
-                    {cloudProvider === 'gcs' && "Enter GCS path (e.g., gs://bucket/path/file.csv)"}
-                    {cloudProvider === 'azure-blob' && "Enter mounted path (e.g., /mnt/mount-name/path/file.csv)"}
-                    {cloudProvider === 'local' && "Enter local file path (e.g., /path/to/file.csv)"}
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
+            {cloudProvider === 'local' && fileFormat === 'csv' ? (
+  <FormItem>
+    <FormLabel>Upload CSV File</FormLabel>
+    <FormControl>
+      <>
+        <input
+          type="file"
+          accept=".csv"
+          onChange={async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (file) {
+              setUploadedFile(file);
+              setUploadStatus('Uploading...');
+              const formData = new FormData();
+              formData.append('file', file);
+              try {
+                const response = await fetch('/api/upload-csv', {
+                  method: 'POST',
+                  body: formData
+                });
+                if (response.ok) {
+                  const data = await response.json();
+                  setUploadStatus('Uploaded: ' + file.name);
+                  form.setValue('filePath', data.filename);
+                  if (typeof setUploadedFilename === 'function') {
+                    setUploadedFilename(data.filename);
+                  }
+                } else {
+                  setUploadStatus('Upload failed');
+                }
+              } catch (err) {
+                setUploadStatus('Upload failed');
+              }
+            }
+          }}
+        />
+        {uploadStatus && (
+          <div className="text-green-600 text-sm mt-2">{uploadStatus}</div>
+        )}
+      </>
+    </FormControl>
+    <FormDescription>
+      Select a local CSV file to upload.
+    </FormDescription>
+  </FormItem>
+) : (
+  <FormField
+    control={form.control}
+    name="filePath"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>File Path</FormLabel>
+        <FormControl>
+          <Input placeholder="path/to/file.csv" {...field} />
+        </FormControl>
+        <FormDescription>
+          {cloudProvider === 's3' && "Enter S3 path (e.g., s3a://bucket/path/file.csv)"}
+          {cloudProvider === 'adls' && "Enter ADLS Gen2 path (e.g., abfss://container@account.dfs.core.windows.net/path/)"}
+          {cloudProvider === 'gcs' && "Enter GCS path (e.g., gs://bucket/path/file.csv)"}
+          {cloudProvider === 'azure-blob' && "Enter mounted path (e.g., /mnt/mount-name/path/file.csv)"}
+          {cloudProvider === 'local' && "Enter local file path (e.g., /path/to/file.csv)"}
+        </FormDescription>
+      </FormItem>
+    )}
+  />
+)}
             
             {form.watch("fileFormat") === "csv" && (
               <>

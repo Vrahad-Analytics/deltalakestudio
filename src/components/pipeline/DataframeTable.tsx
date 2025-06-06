@@ -22,15 +22,13 @@ import { toast } from "@/hooks/use-toast";
 
 interface DataframeTableProps {
   dataframeName: string;
-  workspaceUrl: string | null;
-  token: string | null;
+  filename: string | null;
   rows?: number;
 }
 
 export const DataframeTable: React.FC<DataframeTableProps> = ({
   dataframeName,
-  workspaceUrl,
-  token,
+  filename,
   rows = 20,
 }) => {
   const [isTableDialogOpen, setIsTableDialogOpen] = useState(false);
@@ -38,79 +36,40 @@ export const DataframeTable: React.FC<DataframeTableProps> = ({
   const [loading, setLoading] = useState(false);
 
   const fetchDataframeData = async () => {
-    if (!workspaceUrl || !token) {
+    if (!filename) {
       toast({
-        title: "Connection error",
-        description: "Missing Databricks connection information",
+        title: "No file uploaded",
+        description: "Please upload a CSV file first.",
         variant: "destructive",
       });
       return;
     }
-
     setLoading(true);
-
     try {
-      // In a real implementation, this would make an API call to Databricks
-      // to execute a command like df.limit(rows).toPandas().to_dict('records')
-      // and return the data in a structured format
-      
-      // For demo purposes, we'll simulate a response with random data
-      const mockColumns = ['id', 'name', 'age', 'city', 'country'];
-      const mockRows = Array(Math.min(rows, 100)).fill(0).map((_, i) => [
-        i + 1,
-        `Person ${i + 1}`,
-        20 + Math.floor(Math.random() * 50),
-        ['New York', 'London', 'Tokyo', 'Paris', 'Sydney'][Math.floor(Math.random() * 5)],
-        ['USA', 'UK', 'Japan', 'France', 'Australia'][Math.floor(Math.random() * 5)]
-      ]);
-
-      // Simulate API delay
-      setTimeout(() => {
+      const response = await fetch('/api/display-dataframe', {
+        method: 'POST',
+        body: new URLSearchParams({
+          filename: filename,
+          df_name: dataframeName,
+          nrows: String(rows)
+        }),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
         setTableData({
-          columns: mockColumns,
-          rows: mockRows
+          columns: data.columns,
+          rows: data.data.map(row => data.columns.map(col => row[col]))
         });
-        setLoading(false);
-      }, 800);
-      
-      // In a real implementation, you would use code like this:
-      /*
-      const notebook_path = "/Users/temp_notebook_for_api_" + Date.now();
-      
-      // Create a temporary notebook
-      await fetch(`${workspaceUrl}/api/2.0/workspace/import`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          path: notebook_path,
-          format: 'SOURCE',
-          language: 'PYTHON',
-          content: Buffer.from(`
-            result = ${dataframeName}.limit(${rows}).toPandas().to_dict('records')
-            dbutils.notebook.exit(result)
-          `).toString('base64'),
-          overwrite: true
-        }),
-      });
-      
-      // Run the notebook to get the data
-      const response = await fetch(`${workspaceUrl}/api/2.0/jobs/runs/submit`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          run_name: `Show DataFrame ${dataframeName}`,
-          tasks: [{
-            task_key: "show_dataframe",
-            notebook_task: {
-              notebook_path: notebook_path
-            },
-            existing_cluster_id: "your_cluster_id"
-          }]
-        }),
-      });
-      
-      // Process the response...
-      */
+      } else {
+        toast({
+          title: "Failed to fetch data",
+          description: "Backend error.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Error fetching dataframe:', error);
       toast({
