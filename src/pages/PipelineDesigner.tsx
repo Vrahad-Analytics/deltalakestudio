@@ -11,6 +11,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Canvas } from '@/components/pipeline/Canvas';
 import { ComponentPalette } from '@/components/pipeline/ComponentPalette';
 import { DataSourceDialog } from '@/components/pipeline/DataSourceDialog';
+import { DataframeDisplayDialog } from '@/components/pipeline/DataframeDisplayDialog';
 import { MountS3Dialog } from '@/components/pipeline/MountS3Dialog';
 import { WarehouseDialog } from '@/components/pipeline/WarehouseDialog';
 import { PipelineHeader } from '@/components/pipeline/PipelineHeader';
@@ -28,6 +29,9 @@ import { Node, NodeType } from '@/components/pipeline/types';
 const generateNodeId = (type: string) => `${type}-${Date.now()}`;
 
 const PipelineDesigner = () => {
+  // State for uploaded CSV filename and display dialog
+  const [uploadedFilename, setUploadedFilename] = useState<string | null>(null);
+  const [isDataframeDialogOpen, setIsDataframeDialogOpen] = useState(false);
   // Check if on mobile
   const isMobile = useIsMobile();
   
@@ -346,6 +350,7 @@ const PipelineDesigner = () => {
             workspaceUrl={workspaceUrl}
             token={token}
             isMobile={isMobile}
+            uploadedFilename={uploadedFilename}
           />
           
           {/* AI Chat Interface */}
@@ -376,6 +381,14 @@ const PipelineDesigner = () => {
         onOpenChange={setIsDataSourceDialogOpen}
         onSubmit={onDataSourceSubmit}
         defaultValues={dataSourceForm.getValues()}
+        setUploadedFilename={setUploadedFilename}
+      />
+
+      {/* DataFrame Display Dialog (legacy, now handled per node) */}
+      <DataframeDisplayDialog
+        isOpen={isDataframeDialogOpen}
+        onOpenChange={setIsDataframeDialogOpen}
+        filename={uploadedFilename}
       />
 
       {/* S3 Mount Configuration Dialog */}

@@ -27,15 +27,13 @@ interface DataframeDisplayFormValues {
 interface DataframeDisplayDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  workspaceUrl: string | null;
-  token: string | null;
+  filename: string | null;
 }
 
 export const DataframeDisplayDialog: React.FC<DataframeDisplayDialogProps> = ({
   isOpen,
   onOpenChange,
-  workspaceUrl,
-  token
+  filename
 }) => {
   const form = useForm<DataframeDisplayFormValues>({
     defaultValues: {
@@ -50,7 +48,7 @@ export const DataframeDisplayDialog: React.FC<DataframeDisplayDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" onClick={e => e.stopPropagation()}>
         <DialogHeader>
           <DialogTitle>Display DataFrame</DialogTitle>
           <DialogDescription>
@@ -67,7 +65,7 @@ export const DataframeDisplayDialog: React.FC<DataframeDisplayDialogProps> = ({
                 <FormItem>
                   <FormLabel>DataFrame Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="df" {...field} />
+                    <Input placeholder="df" {...field} onClick={e => e.stopPropagation()} />
                   </FormControl>
                   <FormDescription>
                     Enter the variable name of your DataFrame (e.g., df)
@@ -89,6 +87,7 @@ export const DataframeDisplayDialog: React.FC<DataframeDisplayDialogProps> = ({
                       max={1000}
                       {...field} 
                       onChange={e => field.onChange(parseInt(e.target.value) || 20)}
+                      onClick={e => e.stopPropagation()}
                     />
                   </FormControl>
                   <FormDescription>
@@ -102,8 +101,7 @@ export const DataframeDisplayDialog: React.FC<DataframeDisplayDialogProps> = ({
               <DataframeTable
                 dataframeName={form.watch('dataframeName')}
                 rows={form.watch('rows')}
-                workspaceUrl={workspaceUrl}
-                token={token}
+                filename={filename}
               />
             </div>
           </form>

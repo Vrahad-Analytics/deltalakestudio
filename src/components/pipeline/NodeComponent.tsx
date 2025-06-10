@@ -68,6 +68,22 @@ interface NodeComponentProps {
   isMobile?: boolean;
 }
 
+interface NodeComponentProps {
+  node: Node;
+  onNodeMouseDown: (e: React.MouseEvent, nodeId: string) => void;
+  onNodeClick: (e: React.MouseEvent, nodeId: string) => void;
+  onDeleteNode: (nodeId: string) => void;
+  onCreateCluster: (nodeId: string) => void;
+  onConfigureDataSource: (nodeId: string) => void;
+  onConfigureS3Mount?: (nodeId: string) => void;
+  onConfigureWarehouse?: (nodeId: string) => void;
+  onRenameNode?: (nodeId: string, newLabel: string) => void;
+  workspaceUrl?: string | null;
+  token?: string | null;
+  isMobile?: boolean;
+  uploadedFilename?: string | null;
+}
+
 export const NodeComponent = ({
   node,
   onNodeMouseDown,
@@ -80,7 +96,8 @@ export const NodeComponent = ({
   onRenameNode,
   workspaceUrl,
   token,
-  isMobile
+  isMobile,
+  uploadedFilename
 }: NodeComponentProps) => {
   const [showFullCode, setShowFullCode] = useState(false);
   const [isDataframeDialogOpen, setIsDataframeDialogOpen] = useState(false);
@@ -457,6 +474,7 @@ export const NodeComponent = ({
               e.stopPropagation();
               setIsDataframeDialogOpen(true);
             }}
+            disabled={!uploadedFilename}
           >
             <TableIcon className="h-4 w-4" />
             Display DataFrame
@@ -468,8 +486,7 @@ export const NodeComponent = ({
       <DataframeDisplayDialog 
         isOpen={isDataframeDialogOpen}
         onOpenChange={setIsDataframeDialogOpen}
-        workspaceUrl={workspaceUrl || null}
-        token={token || null}
+        filename={uploadedFilename}
       />
     </div>
   );

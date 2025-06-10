@@ -25,6 +25,7 @@ interface CanvasProps {
   workspaceUrl?: string | null;
   token?: string | null;
   isMobile?: boolean;
+  uploadedFilename?: string | null;
 }
 
 export const Canvas: React.FC<CanvasProps> = ({
@@ -47,7 +48,8 @@ export const Canvas: React.FC<CanvasProps> = ({
   onClick,
   workspaceUrl,
   token,
-  isMobile
+  isMobile,
+  uploadedFilename
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +75,7 @@ export const Canvas: React.FC<CanvasProps> = ({
       >
         <EdgeComponent edges={edges} nodes={nodes} />
         
-        {nodes.map((node) => (
+        {nodes.map(node => (
           <NodeComponent
             key={node.id}
             node={node}
@@ -88,6 +90,7 @@ export const Canvas: React.FC<CanvasProps> = ({
             workspaceUrl={workspaceUrl}
             token={token}
             isMobile={isMobile}
+            uploadedFilename={uploadedFilename}
           />
         ))}
       </div>
